@@ -528,24 +528,6 @@
 
         createMap();
 
-        const ToolsControl = L.Control.extend({
-            options: { position: 'topright' },
-
-            onAdd: function () {
-                const button = L.DomUtil.create('div', 'leaflet-control-tools');
-                button.innerHTML = 'Conversor GPS ↔ MC';
-
-                L.DomEvent.disableClickPropagation(button);
-                L.DomEvent.on(button, 'click', function () {
-                    document.querySelector('.tool-card').classList.toggle('visible');
-                });
-
-                return button;
-            }
-        });
-
-        map.addControl(new ToolsControl());
-
         document.getElementById('gpsLat').placeholder = '@lat,lon o lat lon';
         document.getElementById('mcX').placeholder = '@x,z o x z';
     </script>

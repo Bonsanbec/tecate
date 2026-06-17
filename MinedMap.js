@@ -403,6 +403,24 @@ window.createMap = function () {
             coordControl.update(Math.round(e.latlng.lng), Math.round(-e.latlng.lat));
         });
 
+        const ToolsControl = L.Control.extend({
+            options: { position: 'topright' },
+
+            onAdd: function () {
+                const button = L.DomUtil.create('div', 'leaflet-control-tools');
+                button.innerHTML = 'Conversor GPS ↔ MC';
+
+                L.DomEvent.disableClickPropagation(button);
+                L.DomEvent.on(button, 'click', function () {
+                    document.querySelector('.tool-card').classList.toggle('visible');
+                });
+
+                return button;
+            }
+        });
+
+        map.addControl(new ToolsControl());
+
         const makeHash = function () {
             let ret = '#x=' + params.x + '&z=' + params.z;
 
@@ -451,7 +469,7 @@ window.createMap = function () {
         map.on('click', function (e) {
             const x = e.latlng.lng;
             const z = -e.latlng.lat;
-            const {lat, lon} = localToGps(x,-z);
+            const { lat, lon } = localToGps(x, -z);
             const alt = 550;
             const url = `https://maps.google.com/?q=${lat},${lon}`;
 
