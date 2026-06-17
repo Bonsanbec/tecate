@@ -459,7 +459,7 @@ window.createMap = function () {
 
             pin = L.marker(e.latlng).addTo(map);
             pin.bindPopup(
-                `<b>Minecraft</b><br>X: ${x}<br>Y: ${Math.round(alt - Y_OFFSET)}<br>Z: ${z}<hr><b>GPS</b><br>${lat.toFixed(8)}, ${lon.toFixed(8)}<br>Altitud asumida: 550 msnm<br><br><a target="_blank" href="${url}">Abrir en Google Maps</a>`
+                `<b>Minecraft</b><br>X: ${x}<br>Z: ${z}<hr><b>GPS</b><br>${lat.toFixed(8)}, ${lon.toFixed(8)}<br><a target="_blank" href="${url}">Abrir en Google Maps</a>`
             ).openPopup();
         });
 
