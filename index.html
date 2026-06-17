@@ -269,6 +269,7 @@
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: .08em;
+            margin-top: 16px;
         }
 
         .footer-badge {
@@ -400,6 +401,7 @@
             <input id="gpsAlt" placeholder="Altitud" value="550" />
             <button class="tool-button" onclick="gpsToMinecraft()">Convertir GPS a Minecraft</button>
         </div>
+        <div style="height:12px;"></div>
 
         <div class="tool-label">Minecraft a GPS</div>
         <div class="tool-grid" style="margin-top:8px;">
@@ -502,6 +504,28 @@
             };
         }
 
+        function applyGpsPasteParsing() {
+            const parsed = parseCoordinateInput(document.getElementById('gpsLat').value);
+
+            if (!parsed) {
+                return;
+            }
+
+            document.getElementById('gpsLat').value = parsed.a;
+            document.getElementById('gpsLon').value = parsed.b;
+        }
+
+        function applyMinecraftPasteParsing() {
+            const parsed = parseCoordinateInput(document.getElementById('mcX').value);
+
+            if (!parsed) {
+                return;
+            }
+
+            document.getElementById('mcX').value = parsed.a;
+            document.getElementById('mcZ').value = parsed.b;
+        }
+
         const originalGpsToMinecraft = gpsToMinecraft;
         gpsToMinecraft = function () {
             const parsed = parseCoordinateInput(document.getElementById('gpsLat').value);
@@ -526,10 +550,19 @@
             originalMinecraftToGps();
         };
 
-        createMap();
+        document.getElementById('gpsLat').addEventListener('paste', () => {
+            setTimeout(applyGpsPasteParsing, 0);
+        });
 
-        document.getElementById('gpsLat').placeholder = '@lat,lon o lat lon';
-        document.getElementById('mcX').placeholder = '@x,z o x z';
+        document.getElementById('gpsLat').addEventListener('input', applyGpsPasteParsing);
+
+        document.getElementById('mcX').addEventListener('paste', () => {
+            setTimeout(applyMinecraftPasteParsing, 0);
+        });
+
+        document.getElementById('mcX').addEventListener('input', applyMinecraftPasteParsing);
+
+        createMap();
     </script>
 </body>
 
