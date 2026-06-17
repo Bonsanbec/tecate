@@ -222,7 +222,7 @@
 
         .tool-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 8px;
         }
 
@@ -236,14 +236,13 @@
         }
 
         .tool-button {
-            margin-top: 8px;
-            width: 100%;
             background: #008cff;
             color: white;
             border: 0;
             border-radius: 8px;
             padding: 8px;
             cursor: pointer;
+            grid-column: 1 / -1;
         }
 
         .tool-result {
@@ -251,6 +250,19 @@
             font-family: monospace;
             font-size: 12px;
             color: var(--muted);
+        }
+
+        .tool-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tool-label {
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
         }
 
         .footer-badge {
@@ -355,19 +367,21 @@
 
     <div class="tool-card">
         <h3>Conversor GPS ↔ Minecraft</h3>
+        <div class="tool-label">GPS → Minecraft</div>
 
         <div class="tool-grid">
             <input id="gpsLat" placeholder="Latitud" />
             <input id="gpsLon" placeholder="Longitud" />
-            <input id="gpsAlt" placeholder="Altitud" value="550" />
-            <button class="tool-button" onclick="gpsToMinecraft()">GPS → MC</button>
+            <input id="gpsAlt" placeholder="Altitud (550)" value="550" />
+            <button class="tool-button" onclick="gpsToMinecraft()">Convertir GPS → Minecraft</button>
         </div>
 
+        <div class="tool-label">Minecraft → GPS</div>
         <div class="tool-grid" style="margin-top:8px;">
             <input id="mcX" placeholder="X" />
             <input id="mcY" placeholder="Y" value="41" />
             <input id="mcZ" placeholder="Z" />
-            <button class="tool-button" onclick="minecraftToGps()">MC → GPS</button>
+            <button class="tool-button" onclick="minecraftToGps()">Convertir Minecraft → GPS</button>
         </div>
 
         <div id="toolResult" class="tool-result"></div>
@@ -444,25 +458,31 @@
             document.getElementById('toolResult').textContent = `${gps.lat.toFixed(8)}, ${gps.lon.toFixed(8)} (${alt.toFixed(2)} msnm)`;
         }
 
-        createMap();
+        const leafletMap = createMap();
+        const activeMap = leafletMap || window.map || window.leafletMap || window.MinedMap?.map;
 
         let pin;
-        map.on('click', function (e) {
-            const lat = e.latlng.lat;
-            const lon = e.latlng.lng;
-            const p = gpsToLocal(lat, lon);
-            const x = Math.round(p.x);
-            const z = Math.round(-p.y);
-            const alt = 550;
-            const url = `https://maps.google.com/?q=${lat},${lon}`;
 
-            if (pin) { map.removeLayer(pin); }
+        if (activeMap) {
+            activeMap.on('click', function (e) {
+                const lat = e.latlng.lat;
+                const lon = e.latlng.lng;
+                const p = gpsToLocal(lat, lon);
+                const x = Math.round(p.x);
+                const z = Math.round(-p.y);
+                const alt = 550;
+                const url = `https://maps.google.com/?q=${lat},${lon}`;
 
-            pin = L.marker(e.latlng).addTo(map);
-            pin.bindPopup(
-                `<b>Minecraft</b><br>X: ${x}<br>Y: ${Math.round(alt - Y_OFFSET)}<br>Z: ${z}<hr><b>GPS</b><br>${lat.toFixed(8)}, ${lon.toFixed(8)}<br><br><a target="_blank" href="${url}">Abrir en Google Maps</a>`
-            ).openPopup();
-        });
+                if (pin) { activeMap.removeLayer(pin); }
+
+                pin = L.marker(e.latlng).addTo(activeMap);
+                pin.bindPopup(
+                    `<b>Minecraft</b><br>X: ${x}<br>Y: ${Math.round(alt - Y_OFFSET)}<br>Z: ${z}<hr><b>GPS</b><br>${lat.toFixed(8)}, ${lon.toFixed(8)}<br>Altitud asumida: 550 msnm<br><br><a target="_blank" href="${url}">Abrir en Google Maps</a>`
+                ).openPopup();
+            });
+        } else {
+            console.warn('Leaflet map instance not found. Pin tool disabled.');
+        }
     </script>
 </body>
 
