@@ -458,13 +458,12 @@
             document.getElementById('toolResult').textContent = `${gps.lat.toFixed(8)}, ${gps.lon.toFixed(8)} (${alt.toFixed(2)} msnm)`;
         }
 
-        const leafletMap = createMap();
-        const activeMap = leafletMap || window.map || window.leafletMap || window.MinedMap?.map;
+        createMap();
 
         let pin;
 
-        if (activeMap) {
-            activeMap.on('click', function (e) {
+        if (map) {
+            map.on('click', function (e) {
                 const lat = e.latlng.lat;
                 const lon = e.latlng.lng;
                 const p = gpsToLocal(lat, lon);
@@ -473,9 +472,9 @@
                 const alt = 550;
                 const url = `https://maps.google.com/?q=${lat},${lon}`;
 
-                if (pin) { activeMap.removeLayer(pin); }
+                if (pin) { map.removeLayer(pin); }
 
-                pin = L.marker(e.latlng).addTo(activeMap);
+                pin = L.marker(e.latlng).addTo(map);
                 pin.bindPopup(
                     `<b>Minecraft</b><br>X: ${x}<br>Y: ${Math.round(alt - Y_OFFSET)}<br>Z: ${z}<hr><b>GPS</b><br>${lat.toFixed(8)}, ${lon.toFixed(8)}<br>Altitud asumida: 550 msnm<br><br><a target="_blank" href="${url}">Abrir en Google Maps</a>`
                 ).openPopup();
