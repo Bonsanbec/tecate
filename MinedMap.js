@@ -446,6 +446,8 @@ window.createMap = function () {
         map.on('layeradd', refreshHash);
         map.on('layerremove', refreshHash);
 
+        let pin;
+
         map.on('click', function (e) {
             const lat = e.latlng.lat;
             const lon = e.latlng.lng;
