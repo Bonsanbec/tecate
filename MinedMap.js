@@ -450,8 +450,8 @@ window.createMap = function () {
 
         map.on('click', function (e) {
             const x = e.latlng.lng;
-            const z = e.latlng.lat;
-            const {lat, lon} = localToGps(x,z);
+            const z = -e.latlng.lat;
+            const {lat, lon} = localToGps(x,-z);
             const alt = 550;
             const url = `https://maps.google.com/?q=${lat},${lon}`;
 
