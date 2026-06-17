@@ -417,17 +417,11 @@ window.createMap = function () {
                     alt="Spatial"
             
                     style="
-            
-                        width:16px;
-            
-                        height:16px;
-            
+                        width:32px;
+                        height:32px;
                         vertical-align:middle;
-            
-                        margin-right:6px;
-            
+                        object-fit: contain;
                     "
-            
                 />            
             `;
 
