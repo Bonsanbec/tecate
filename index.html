@@ -202,10 +202,16 @@
         }
 
         .tool-card {
+            display: none;
+
             position: fixed;
-            right: 72px;
-            top: 16px;
+
+            top: 140px;
+
+            right: 16px;
+
             z-index: 2000;
+
             width: 340px;
             padding: 12px 16px;
             background: var(--panel);
@@ -326,6 +332,25 @@
             object-fit: contain;
         }
 
+        .leaflet-control-tools {
+            background: rgba(11, 15, 20, .92);
+            color: white;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 140, 255, .25);
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .leaflet-control-tools:hover {
+            background: rgba(0, 140, 255, .25);
+        }
+
+        .tool-card.visible {
+            display: block;
+        }
+
         @media (max-width: 768px) {
 
             .branding,
@@ -372,7 +397,7 @@
         <div class="tool-grid">
             <input id="gpsLat" placeholder="Latitud" />
             <input id="gpsLon" placeholder="Longitud" />
-            <input id="gpsAlt" placeholder="Altitud" />
+            <input id="gpsAlt" placeholder="Altitud" value="550" />
             <button class="tool-button" onclick="gpsToMinecraft()">Convertir GPS a Minecraft</button>
         </div>
 
@@ -458,7 +483,71 @@
             document.getElementById('toolResult').textContent = `${gps.lat.toFixed(8)}, ${gps.lon.toFixed(8)} (${alt.toFixed(2)} msnm)`;
         }
 
+        function parseCoordinateInput(text) {
+            const values = (text || '')
+                .replace(/@/g, ' ')
+                .replace(/,/g, ' ')
+                .trim()
+                .split(/\s+/)
+                .map(Number)
+                .filter(v => !Number.isNaN(v));
+
+            if (values.length < 2) {
+                return null;
+            }
+
+            return {
+                a: values[0],
+                b: values[1]
+            };
+        }
+
+        const originalGpsToMinecraft = gpsToMinecraft;
+        gpsToMinecraft = function () {
+            const parsed = parseCoordinateInput(document.getElementById('gpsLat').value);
+
+            if (parsed) {
+                document.getElementById('gpsLat').value = parsed.a;
+                document.getElementById('gpsLon').value = parsed.b;
+            }
+
+            originalGpsToMinecraft();
+        };
+
+        const originalMinecraftToGps = minecraftToGps;
+        minecraftToGps = function () {
+            const parsed = parseCoordinateInput(document.getElementById('mcX').value);
+
+            if (parsed) {
+                document.getElementById('mcX').value = parsed.a;
+                document.getElementById('mcZ').value = parsed.b;
+            }
+
+            originalMinecraftToGps();
+        };
+
         createMap();
+
+        const ToolsControl = L.Control.extend({
+            options: { position: 'topright' },
+
+            onAdd: function () {
+                const button = L.DomUtil.create('div', 'leaflet-control-tools');
+                button.innerHTML = 'Conversor GPS ↔ MC';
+
+                L.DomEvent.disableClickPropagation(button);
+                L.DomEvent.on(button, 'click', function () {
+                    document.querySelector('.tool-card').classList.toggle('visible');
+                });
+
+                return button;
+            }
+        });
+
+        map.addControl(new ToolsControl());
+
+        document.getElementById('gpsLat').placeholder = '@lat,lon o lat lon';
+        document.getElementById('mcX').placeholder = '@x,z o x z';
     </script>
 </body>
 
