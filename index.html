@@ -372,16 +372,16 @@
         <div class="tool-grid">
             <input id="gpsLat" placeholder="Latitud" />
             <input id="gpsLon" placeholder="Longitud" />
-            <input id="gpsAlt" placeholder="Altitud (550)" value="550" />
-            <button class="tool-button" onclick="gpsToMinecraft()">Convertir GPS → Minecraft</button>
+            <input id="gpsAlt" placeholder="Altitud" />
+            <button class="tool-button" onclick="gpsToMinecraft()">Convertir GPS a Minecraft</button>
         </div>
 
         <div class="tool-label">Minecraft → GPS</div>
         <div class="tool-grid" style="margin-top:8px;">
             <input id="mcX" placeholder="X" />
-            <input id="mcY" placeholder="Y" value="41" />
+            <input id="mcY" placeholder="Y" />
             <input id="mcZ" placeholder="Z" />
-            <button class="tool-button" onclick="minecraftToGps()">Convertir Minecraft → GPS</button>
+            <button class="tool-button" onclick="minecraftToGps()">Convertir Minecraft a GPS</button>
         </div>
 
         <div id="toolResult" class="tool-result"></div>
