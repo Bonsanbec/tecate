@@ -201,6 +201,58 @@
             margin-top: 2px;
         }
 
+        .tool-card {
+            position: fixed;
+            right: 16px;
+            top: 96px;
+            z-index: 2000;
+            width: 340px;
+            padding: 12px 16px;
+            background: var(--panel);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 140, 255, .25);
+            border-radius: 14px;
+            color: white;
+        }
+
+        .tool-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .tool-grid input {
+            width: 100%;
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .15);
+            color: white;
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .tool-button {
+            margin-top: 8px;
+            width: 100%;
+            background: #008cff;
+            color: white;
+            border: 0;
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .tool-result {
+            margin-top: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
         .footer-badge {
             position: fixed;
             left: 16px;
@@ -301,6 +353,26 @@
         </div>
     </div>
 
+    <div class="tool-card">
+        <h3>Conversor GPS ↔ Minecraft</h3>
+
+        <div class="tool-grid">
+            <input id="gpsLat" placeholder="Latitud" />
+            <input id="gpsLon" placeholder="Longitud" />
+            <input id="gpsAlt" placeholder="Altitud" value="550" />
+            <button class="tool-button" onclick="gpsToMinecraft()">GPS → MC</button>
+        </div>
+
+        <div class="tool-grid" style="margin-top:8px;">
+            <input id="mcX" placeholder="X" />
+            <input id="mcY" placeholder="Y" value="41" />
+            <input id="mcZ" placeholder="Z" />
+            <button class="tool-button" onclick="minecraftToGps()">MC → GPS</button>
+        </div>
+
+        <div id="toolResult" class="tool-result"></div>
+    </div>
+
     <div class="footer-badge">
         <div class="footer-title">Únetenos en todos tus dispositivos</div>
         <div class="footer-subtitle">
@@ -321,7 +393,76 @@
         </div>
     </div>
     <script>
+        const EARTH_RADIUS = 6378137.0;
+        const ORIGIN_LAT = 32.573229;
+        const ORIGIN_LON = -116.626536;
+        const Y_OFFSET = 509;
+        const LAT0_RAD = ORIGIN_LAT * Math.PI / 180;
+        const LON0_RAD = ORIGIN_LON * Math.PI / 180;
+
+        function gpsToLocal(lat, lon) {
+            const latRad = lat * Math.PI / 180;
+            const lonRad = lon * Math.PI / 180;
+            return {
+                x: (lonRad - LON0_RAD) * EARTH_RADIUS * Math.cos(LAT0_RAD),
+                y: (latRad - LAT0_RAD) * EARTH_RADIUS
+            };
+        }
+
+        function localToGps(x, y) {
+            const latRad = LAT0_RAD + (y / EARTH_RADIUS);
+            const lonRad = LON0_RAD + (x / (EARTH_RADIUS * Math.cos(LAT0_RAD)));
+            return {
+                lat: latRad * 180 / Math.PI,
+                lon: lonRad * 180 / Math.PI
+            };
+        }
+
+        function gpsToMinecraft() {
+            const lat = parseFloat(document.getElementById('gpsLat').value);
+            const lon = parseFloat(document.getElementById('gpsLon').value);
+            const alt = parseFloat(document.getElementById('gpsAlt').value || 550);
+            const p = gpsToLocal(lat, lon);
+            const x = Math.round(p.x);
+            const z = Math.round(-p.y);
+            const y = Math.round(alt - Y_OFFSET);
+            document.getElementById('mcX').value = x;
+            document.getElementById('mcY').value = y;
+            document.getElementById('mcZ').value = z;
+            document.getElementById('toolResult').textContent = `X=${x} Y=${y} Z=${z}`;
+        }
+
+        function minecraftToGps() {
+            const x = parseFloat(document.getElementById('mcX').value);
+            const y = parseFloat(document.getElementById('mcY').value);
+            const z = parseFloat(document.getElementById('mcZ').value);
+            const gps = localToGps(x, -z);
+            const alt = y + Y_OFFSET;
+            document.getElementById('gpsLat').value = gps.lat.toFixed(8);
+            document.getElementById('gpsLon').value = gps.lon.toFixed(8);
+            document.getElementById('gpsAlt').value = alt.toFixed(2);
+            document.getElementById('toolResult').textContent = `${gps.lat.toFixed(8)}, ${gps.lon.toFixed(8)} (${alt.toFixed(2)} msnm)`;
+        }
+
         createMap();
+
+        let pin;
+        map.on('click', function (e) {
+            const lat = e.latlng.lat;
+            const lon = e.latlng.lng;
+            const p = gpsToLocal(lat, lon);
+            const x = Math.round(p.x);
+            const z = Math.round(-p.y);
+            const alt = 550;
+            const url = `https://maps.google.com/?q=${lat},${lon}`;
+
+            if (pin) { map.removeLayer(pin); }
+
+            pin = L.marker(e.latlng).addTo(map);
+            pin.bindPopup(
+                `<b>Minecraft</b><br>X: ${x}<br>Y: ${Math.round(alt - Y_OFFSET)}<br>Z: ${z}<hr><b>GPS</b><br>${lat.toFixed(8)}, ${lon.toFixed(8)}<br><br><a target="_blank" href="${url}">Abrir en Google Maps</a>`
+            ).openPopup();
+        });
     </script>
 </body>
 
