@@ -449,11 +449,9 @@ window.createMap = function () {
         let pin;
 
         map.on('click', function (e) {
-            const lat = e.latlng.lat;
-            const lon = e.latlng.lng;
-            const p = gpsToLocal(lat, lon);
-            const x = Math.round(p.x);
-            const z = Math.round(-p.y);
+            const x = e.latlng.lat;
+            const z = e.latlng.lng;
+            const {lat, lon} = localToGps(x,z);
             const alt = 550;
             const url = `https://maps.google.com/?q=${lat},${lon}`;
 
