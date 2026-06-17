@@ -532,6 +532,8 @@ window.createMap = function () {
 
         }
 
+        window.focusMinecraftCoordinate = focusMinecraftCoordinate;
+
         window.onhashchange = function () {
             // Keep keyboard focus on map when popups open or close
             refocus();
