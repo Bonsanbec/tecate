@@ -553,14 +553,12 @@
         document.getElementById('gpsLat').addEventListener('paste', () => {
             setTimeout(applyGpsPasteParsing, 0);
         });
-
-        document.getElementById('gpsLat').addEventListener('input', applyGpsPasteParsing);
+        document.getElementById('gpsLat').addEventListener('blur', applyGpsPasteParsing);
 
         document.getElementById('mcX').addEventListener('paste', () => {
             setTimeout(applyMinecraftPasteParsing, 0);
         });
-
-        document.getElementById('mcX').addEventListener('input', applyMinecraftPasteParsing);
+        document.getElementById('mcX').addEventListener('blur', applyMinecraftPasteParsing);
 
         createMap();
     </script>
