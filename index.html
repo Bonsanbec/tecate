@@ -459,29 +459,6 @@
         }
 
         createMap();
-
-        let pin;
-
-        if (map) {
-            map.on('click', function (e) {
-                const lat = e.latlng.lat;
-                const lon = e.latlng.lng;
-                const p = gpsToLocal(lat, lon);
-                const x = Math.round(p.x);
-                const z = Math.round(-p.y);
-                const alt = 550;
-                const url = `https://maps.google.com/?q=${lat},${lon}`;
-
-                if (pin) { map.removeLayer(pin); }
-
-                pin = L.marker(e.latlng).addTo(map);
-                pin.bindPopup(
-                    `<b>Minecraft</b><br>X: ${x}<br>Y: ${Math.round(alt - Y_OFFSET)}<br>Z: ${z}<hr><b>GPS</b><br>${lat.toFixed(8)}, ${lon.toFixed(8)}<br>Altitud asumida: 550 msnm<br><br><a target="_blank" href="${url}">Abrir en Google Maps</a>`
-                ).openPopup();
-            });
-        } else {
-            console.warn('Leaflet map instance not found. Pin tool disabled.');
-        }
     </script>
 </body>
 

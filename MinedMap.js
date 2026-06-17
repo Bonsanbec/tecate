@@ -357,7 +357,7 @@ window.createMap = function () {
 
         updateParams();
 
-        window.map = L.map('map', {
+        const map = L.map('map', {
             center: [-params.z, params.x],
             zoom: params.zoom,
             minZoom: -(mipmaps.length - 1),
@@ -445,6 +445,23 @@ window.createMap = function () {
         map.on('zoomend', refreshHash);
         map.on('layeradd', refreshHash);
         map.on('layerremove', refreshHash);
+
+        map.on('click', function (e) {
+            const lat = e.latlng.lat;
+            const lon = e.latlng.lng;
+            const p = gpsToLocal(lat, lon);
+            const x = Math.round(p.x);
+            const z = Math.round(-p.y);
+            const alt = 550;
+            const url = `https://maps.google.com/?q=${lat},${lon}`;
+
+            if (pin) { map.removeLayer(pin); }
+
+            pin = L.marker(e.latlng).addTo(map);
+            pin.bindPopup(
+                `<b>Minecraft</b><br>X: ${x}<br>Y: ${Math.round(alt - Y_OFFSET)}<br>Z: ${z}<hr><b>GPS</b><br>${lat.toFixed(8)}, ${lon.toFixed(8)}<br>Altitud asumida: 550 msnm<br><br><a target="_blank" href="${url}">Abrir en Google Maps</a>`
+            ).openPopup();
+        });
 
         window.onhashchange = function () {
             // Keep keyboard focus on map when popups open or close
