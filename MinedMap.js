@@ -451,7 +451,7 @@ window.createMap = function () {
         map.on('click', function (e) {
             const x = e.latlng.lat;
             const z = e.latlng.lng;
-            const {lat, lon} = minecraftToGps(x,z);
+            const {lat, lon} = localToGps(x,-z);
             const alt = 550;
             const url = `https://maps.google.com/?q=${lat},${lon}`;
 
