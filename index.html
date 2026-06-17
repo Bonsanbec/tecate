@@ -471,6 +471,7 @@
             document.getElementById('mcY').value = y;
             document.getElementById('mcZ').value = z;
             document.getElementById('toolResult').textContent = `X=${x} Y=${y} Z=${z}`;
+            focusMinecraftCoordinate(x, y, z);
         }
 
         function minecraftToGps() {
@@ -483,6 +484,7 @@
             document.getElementById('gpsLon').value = gps.lon.toFixed(8);
             document.getElementById('gpsAlt').value = alt.toFixed(2);
             document.getElementById('toolResult').textContent = `${gps.lat.toFixed(8)}, ${gps.lon.toFixed(8)} (${alt.toFixed(2)} msnm)`;
+            focusMinecraftCoordinate(x, y, z);
         }
 
         function parseCoordinateInput(text) {

@@ -496,6 +496,42 @@ window.createMap = function () {
             ).openPopup();
         });
 
+        function focusMinecraftCoordinate(x, y, z) {
+
+            const latlng = L.latLng(-z, x);
+
+            if (pin) {
+
+                map.removeLayer(pin);
+
+            }
+
+            pin = L.marker(latlng).addTo(map);
+
+            pin.bindPopup(
+
+                `<b>Minecraft</b><br>
+        
+                X: ${x}<br>
+        
+                Y: ${y}<br>
+        
+                Z: ${z}`
+
+            );
+
+            map.flyTo(
+                latlng,
+                Math.max(map.getZoom(), 2),
+                {
+                    duration: 1.5
+                }
+            );
+
+            pin.openPopup();
+
+        }
+
         window.onhashchange = function () {
             // Keep keyboard focus on map when popups open or close
             refocus();
