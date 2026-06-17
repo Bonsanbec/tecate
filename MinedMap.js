@@ -408,7 +408,28 @@ window.createMap = function () {
 
             onAdd: function () {
                 const button = L.DomUtil.create('div', 'leaflet-control-tools');
-                button.innerHTML = 'Conversor GPS ↔ MC';
+                button.innerHTML = `
+
+                <img
+            
+                    src="static/spatial.png"
+            
+                    alt="Spatial"
+            
+                    style="
+            
+                        width:16px;
+            
+                        height:16px;
+            
+                        vertical-align:middle;
+            
+                        margin-right:6px;
+            
+                    "
+            
+                />            
+            `;
 
                 L.DomEvent.disableClickPropagation(button);
                 L.DomEvent.on(button, 'click', function () {
